@@ -1,0 +1,15 @@
+.venv/
+vendor/
+build/
+dist/
+__pycache__/
+**/__pycache__/
+*.log
+web/state/
+runs/
+config.local.json
+.DS_Store
+*.zip
+*.elf
+*.o
+*.a

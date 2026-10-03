@@ -1,0 +1,20 @@
+#version 450
+layout(local_size_x = 64) in;
+layout(set = 0, binding = 0, std430) readonly buffer Inputs { float x[]; };
+layout(set = 0, binding = 1, std430) readonly buffer Weights { float w[]; };
+layout(set = 0, binding = 2, std430) writeonly buffer Outputs { float y[]; };
+// A deliberately small, fixed-shape FP32 operation: [7,16] x [16,13].
+// Weights are row-major; the 13 biases follow the 208 weights.
+void main() {
+    uint i = gl_GlobalInvocationID.x;
+    if (i >= 91) return;
+    uint row = i / 13;
+    uint col = i % 13;
+    float value = 0.0;
+    for (uint k = 0; k < 16; ++k)
+        value += x[row * 16 + k] * w[k * 13 + col];
+#if ACTIVATION
+    value = max(value + w[208 + col], 0.0);
+#endif
+    y[i] = value;
+}
